@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dorong : 흩어진 작업을 한 방울에</title>
+<meta name="description" content="프로젝트마다 흩어진 앱·파일·웹을 방울 하나에 담아 한 번에 엽니다. macOS 데스크탑 위젯.">
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg-soft: #f6f6f8;
+    --bg-soft-2: #f0f0f3;
+    --text: #1d1d1f;
+    --text-dim: rgba(0, 0, 0, 0.58);
+    --text-dimmer: rgba(0, 0, 0, 0.4);
+    --border: rgba(0, 0, 0, 0.08);
+    --accent: #1d1d1f;
+    --accent-hover: #000000;
+    --accent-text: #ffffff;
+    --lavender: #DDD2F5;
+    --mint: #C8EAD8;
+    --blue: #C8D6F0;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+                 "Segoe UI", system-ui, "Apple SD Gothic Neo", "Pretendard",
+                 "Noto Sans KR", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-size: 17px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  a { color: inherit; }
+
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* ---------- Sticky header ---------- */
+  header.top {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.82);
+    -webkit-backdrop-filter: saturate(160%) blur(14px);
+    backdrop-filter: saturate(160%) blur(14px);
+    border-bottom: 1px solid var(--border);
+  }
+  .top-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 24px;
+    max-width: 960px;
+    margin: 0 auto;
+  }
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    font-size: 16px;
+    color: var(--text);
+    text-decoration: none;
+  }
+  .brand-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0) 50%),
+      radial-gradient(circle at 50% 60%, var(--lavender) 0%, rgba(221, 210, 245, 0.7) 100%);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  }
+  .lang-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    font-size: 13px;
+    letter-spacing: 0.02em;
+  }
+  .lang-toggle a {
+    color: var(--text-dim);
+    text-decoration: none;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: color 0.12s ease, background 0.12s ease;
+  }
+  .lang-toggle a.active {
+    color: var(--text);
+    background: var(--bg-soft);
+  }
+  .lang-toggle a:hover { color: var(--text); }
+  .lang-sep { color: var(--text-dimmer); }
+
+  /* ---------- Hero ---------- */
+  section.hero {
+    padding: 88px 0 96px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .bubbles {
+    position: relative;
+    width: 100%;
+    max-width: 520px;
+    height: 220px;
+    margin: 0 auto 56px;
+    pointer-events: none;
+  }
+  .bubble {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.65);
+    box-shadow:
+      inset 0 -16px 28px rgba(0, 0, 0, 0.06),
+      inset 6px 10px 22px rgba(255, 255, 255, 0.7),
+      0 18px 50px rgba(60, 60, 100, 0.10),
+      0 4px 14px rgba(0, 0, 0, 0.05);
+  }
+  .bubble.b1 {
+    width: 144px; height: 144px;
+    left: calc(50% - 228px); top: 40px;
+    background:
+      radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0) 38%),
+      radial-gradient(circle at 50% 55%, rgba(221, 210, 245, 0.92) 0%, rgba(221, 210, 245, 0.55) 70%, rgba(221, 210, 245, 0.35) 100%);
+  }
+  .bubble.b2 {
+    width: 156px; height: 156px;
+    left: calc(50% - 78px); top: 22px;
+    background:
+      radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0) 38%),
+      radial-gradient(circle at 50% 55%, rgba(200, 234, 216, 0.92) 0%, rgba(200, 234, 216, 0.55) 70%, rgba(200, 234, 216, 0.35) 100%);
+  }
+  .bubble.b3 {
+    width: 144px; height: 144px;
+    left: calc(50% + 84px); top: 42px;
+    background:
+      radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0) 38%),
+      radial-gradient(circle at 50% 55%, rgba(200, 214, 240, 0.92) 0%, rgba(200, 214, 240, 0.55) 70%, rgba(200, 214, 240, 0.35) 100%);
+  }
+
+  h1.headline {
+    font-size: 56px;
+    font-weight: 600;
+    letter-spacing: -0.028em;
+    line-height: 1.08;
+    margin-bottom: 22px;
+  }
+  p.subhead {
+    font-size: 19px;
+    color: var(--text-dim);
+    max-width: 620px;
+    margin: 0 auto 40px;
+    line-height: 1.55;
+    letter-spacing: -0.005em;
+  }
+
+  /* ---------- CTA ---------- */
+  .cta {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .cta-os {
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .btn {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--accent-text);
+    padding: 15px 34px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: -0.005em;
+    text-decoration: none;
+    transition: transform 0.12s ease, background 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  }
+  .btn:hover {
+    background: var(--accent-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+  }
+
+  /* ---------- Section base ---------- */
+  section.block {
+    padding: 84px 0;
+    border-top: 1px solid var(--border);
+  }
+  section.block h2 {
+    font-size: 30px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    margin-bottom: 40px;
+    text-align: center;
+  }
+
+  /* ---------- Problem ---------- */
+  .problem-list {
+    display: grid;
+    gap: 14px;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+  .problem-item {
+    background: var(--bg-soft);
+    padding: 20px 24px;
+    border-radius: 14px;
+    color: var(--text);
+    font-size: 16.5px;
+    line-height: 1.55;
+  }
+
+  /* ---------- Solution / bundle diagram ---------- */
+  .bundle-diagram {
+    max-width: 720px;
+    margin: 0 auto 28px;
+  }
+  .bundle-box {
+    position: relative;
+    border: 2px dashed rgba(0, 0, 0, 0.16);
+    border-radius: 28px;
+    padding: 48px 36px 40px;
+    background: linear-gradient(180deg, rgba(246, 246, 248, 0.55), rgba(246, 246, 248, 0));
+    margin-bottom: 26px;
+  }
+  .bundle-badge {
+    position: absolute;
+    top: -14px;
+    left: 28px;
+    background: var(--text);
+    color: var(--accent-text);
+    font-size: 12.5px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    padding: 6px 14px;
+    border-radius: 999px;
+    line-height: 1;
+  }
+  .bundle-bubbles {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    align-items: start;
+    justify-items: center;
+  }
+  .bd-bubble {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .bd-circle {
+    width: 112px;
+    height: 112px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    box-shadow:
+      inset 0 -8px 16px rgba(0, 0, 0, 0.05),
+      inset 4px 6px 12px rgba(255, 255, 255, 0.85),
+      0 6px 18px rgba(0, 0, 0, 0.06);
+  }
+  .bd-circle.c1 {
+    background:
+      radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0) 38%),
+      radial-gradient(circle at 50% 55%, rgba(221, 210, 245, 0.92) 0%, rgba(221, 210, 245, 0.55) 70%, rgba(221, 210, 245, 0.35) 100%);
+  }
+  .bd-circle.c2 {
+    background:
+      radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0) 38%),
+      radial-gradient(circle at 50% 55%, rgba(200, 234, 216, 0.92) 0%, rgba(200, 234, 216, 0.55) 70%, rgba(200, 234, 216, 0.35) 100%);
+  }
+  .bd-circle.c3 {
+    background:
+      radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0) 38%),
+      radial-gradient(circle at 50% 55%, rgba(200, 214, 240, 0.92) 0%, rgba(200, 214, 240, 0.55) 70%, rgba(200, 214, 240, 0.35) 100%);
+  }
+  .bd-label {
+    margin-top: 14px;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--text);
+  }
+  .bd-drops {
+    position: relative;
+    margin-top: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  .bd-drops::before {
+    content: "";
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    width: 1px;
+    height: 8px;
+    background: rgba(0, 0, 0, 0.25);
+  }
+  .bd-drop {
+    font-size: 11.5px;
+    color: var(--text-dim);
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 3px 10px;
+    line-height: 1.3;
+    white-space: nowrap;
+  }
+  .bundle-legend {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 22px;
+    font-size: 14px;
+    color: var(--text-dim);
+    margin: 0 auto 22px;
+    padding: 0;
+  }
+  .bundle-legend li {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .lg-mark {
+    display: inline-block;
+    flex: none;
+  }
+  .lg-bundle {
+    width: 18px;
+    height: 12px;
+    border: 1.5px dashed rgba(0, 0, 0, 0.4);
+    border-radius: 4px;
+  }
+  .lg-bubble {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0) 50%),
+      radial-gradient(circle at 50% 55%, var(--lavender) 0%, rgba(221, 210, 245, 0.7) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+  }
+  .lg-drop {
+    width: 20px;
+    height: 9px;
+    border-radius: 999px;
+    background: #fff;
+    border: 1px solid var(--border);
+  }
+  .caption {
+    max-width: 640px;
+    margin: 0 auto;
+    text-align: center;
+    font-size: 16px;
+    color: var(--text-dim);
+    line-height: 1.65;
+  }
+
+  /* ---------- Values ---------- */
+  .values {
+    display: grid;
+    gap: 26px;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  .value {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 18px;
+    align-items: start;
+  }
+  .value-num {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--bg-soft);
+    display: grid;
+    place-items: center;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .value-text .vtitle {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    letter-spacing: -0.01em;
+  }
+  .value-text .vdesc {
+    font-size: 16px;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
+  /* ---------- Audience ---------- */
+  .audience {
+    max-width: 640px;
+    margin: 0 auto;
+    text-align: center;
+    font-size: 18px;
+    line-height: 1.6;
+    color: var(--text);
+  }
+  .audience p + p {
+    margin-top: 14px;
+    color: var(--text-dim);
+    font-size: 17px;
+  }
+
+  /* ---------- Final CTA ---------- */
+  section.final {
+    padding: 100px 0 120px;
+    text-align: center;
+    border-top: 1px solid var(--border);
+  }
+  section.final h2 {
+    font-size: 36px;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    margin-bottom: 32px;
+    line-height: 1.2;
+  }
+
+  /* ---------- Footer ---------- */
+  footer.foot {
+    padding: 28px 0 44px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-dimmer);
+    border-top: 1px solid var(--border);
+  }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 720px) {
+    h1.headline { font-size: 38px; letter-spacing: -0.022em; }
+    p.subhead { font-size: 16.5px; }
+    section.hero { padding: 56px 0 64px; }
+    section.block { padding: 60px 0; }
+    section.final { padding: 72px 0 84px; }
+    section.block h2 { font-size: 24px; margin-bottom: 28px; }
+    section.final h2 { font-size: 26px; }
+    .bundle-diagram { max-width: 100%; }
+    .bundle-box { padding: 44px 22px 32px; border-radius: 24px; }
+    .bundle-badge { left: 20px; }
+    .bundle-bubbles { grid-template-columns: 1fr; gap: 28px; }
+    .bubbles { height: 200px; max-width: 340px; margin-bottom: 40px; }
+    .bubble.b1 { width: 96px; height: 96px; left: calc(50% - 158px); top: 38px; }
+    .bubble.b2 { width: 108px; height: 108px; left: calc(50% - 54px); top: 22px; }
+    .bubble.b3 { width: 96px; height: 96px; left: calc(50% + 60px); top: 40px; }
+    .top-inner { padding: 12px 18px; }
+    .container { padding: 0 20px; }
+    .audience { font-size: 16.5px; }
+    .audience p + p { font-size: 15.5px; }
+  }
+  @media (max-width: 360px) {
+    h1.headline { font-size: 32px; }
+    .bubbles { max-width: 300px; }
+    .bubble.b1 { width: 84px; height: 84px; left: calc(50% - 138px); top: 38px; }
+    .bubble.b2 { width: 94px; height: 94px; left: calc(50% - 47px); top: 22px; }
+    .bubble.b3 { width: 84px; height: 84px; left: calc(50% + 53px); top: 40px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner">
+    <a href="#" class="brand"><span class="brand-dot" aria-hidden="true"></span>Dorong</a>
+    <nav class="lang-toggle" aria-label="언어 선택">
+      <a href="index.html" class="active" aria-current="page">KO</a>
+      <span class="lang-sep">/</span>
+      <a href="en.html">EN</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <section class="hero">
+    <div class="container">
+      <div class="bubbles" aria-hidden="true">
+        <div class="bubble b1"></div>
+        <div class="bubble b2"></div>
+        <div class="bubble b3"></div>
+      </div>
+      <h1 class="headline">흩어진 작업을<br>한 방울에</h1>
+      <p class="subhead">프로젝트마다 흩어진 앱·파일·웹을 방울 하나에 담아 한 번에 엽니다. 단축키 한 번(⌘⇧B)이면 끝.</p>
+      <div class="cta">
+        <span class="cta-os">macOS</span>
+        <a href="#download" class="btn">무료로 다운로드</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="container">
+      <h2>이런 적 있지 않나요?</h2>
+      <div class="problem-list">
+        <div class="problem-item">프로젝트 하나 시작하려고 한글 켜고, 크롬 켜고, 자료 폴더 뒤지고.</div>
+        <div class="problem-item">Cmd+Tab 스무 번 누르다 "방금 뭐 찾고 있었지" 싶을 때.</div>
+        <div class="problem-item">창은 잔뜩 열려있는데 정작 닫을 수가 없을 때.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="container">
+      <h2>도롱은 작업 세트를 통째로 담습니다</h2>
+      <div class="bundle-diagram">
+        <div class="bundle-box">
+          <span class="bundle-badge">논문 프로젝트</span>
+          <div class="bundle-bubbles">
+            <div class="bd-bubble">
+              <div class="bd-circle c1" aria-hidden="true"></div>
+              <div class="bd-label">한글</div>
+              <div class="bd-drops">
+                <div class="bd-drop">논문초고.hwp</div>
+                <div class="bd-drop">참고문헌.pdf</div>
+              </div>
+            </div>
+            <div class="bd-bubble">
+              <div class="bd-circle c2" aria-hidden="true"></div>
+              <div class="bd-label">Google Scholar</div>
+            </div>
+            <div class="bd-bubble">
+              <div class="bd-circle c3" aria-hidden="true"></div>
+              <div class="bd-label">Chrome</div>
+            </div>
+          </div>
+        </div>
+        <ul class="bundle-legend">
+          <li><span class="lg-mark lg-bundle" aria-hidden="true"></span>묶음 = 프로젝트 하나로 묶기</li>
+          <li><span class="lg-mark lg-bubble" aria-hidden="true"></span>방울 = 앱이나 웹 하나</li>
+          <li><span class="lg-mark lg-drop" aria-hidden="true"></span>거품 = 방울 속 파일</li>
+        </ul>
+      </div>
+      <p class="caption">논문 쓸 땐 한글, Scholar, 참고문헌 PDF를 한 묶음에. 클릭 한 번이면 그 세트가 통째로 열립니다.</p>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="container">
+      <h2>핵심 가치</h2>
+      <div class="values">
+        <div class="value">
+          <div class="value-num">1</div>
+          <div class="value-text">
+            <div class="vtitle">한 번에 펼친다</div>
+            <div class="vdesc">프로젝트 세트를 클릭 한 번으로. 매번 하나씩 찾아 열 필요 없이.</div>
+          </div>
+        </div>
+        <div class="value">
+          <div class="value-num">2</div>
+          <div class="value-text">
+            <div class="vtitle">부르면 나온다</div>
+            <div class="vdesc">⌘⇧B로 어디서든 도롱을 부르고, 다시 숨깁니다.</div>
+          </div>
+        </div>
+        <div class="value">
+          <div class="value-num">3</div>
+          <div class="value-text">
+            <div class="vtitle">가볍고 조용하다</div>
+            <div class="vdesc">당신 맥 안에서만 돕니다. 계정도, 서버도, 데이터 수집도 없이.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="container">
+      <h2>누구를 위한 것</h2>
+      <div class="audience">
+        <p>ver.1, ver.2 ... 끝없이 길어지는 작업. 최최최종을 만드는 사람들에게.</p>
+        <p>여러 프로젝트를 오가며, 그때그때 다른 도구 세트를 펼쳤다 접는 사람.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="final" id="download">
+    <div class="container">
+      <h2>지금 무료로 써보세요</h2>
+      <div class="cta">
+        <span class="cta-os">macOS</span>
+        <a href="#download" class="btn">다운로드</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="foot">© Dorong</footer>
+
+</body>
+</html>
