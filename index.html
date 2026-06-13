@@ -211,6 +211,44 @@
     transform: translateY(-1px);
     box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
   }
+  .btn[aria-disabled="true"] {
+    background: var(--bg-soft-2);
+    color: var(--text-dim);
+    cursor: not-allowed;
+    box-shadow: none;
+    pointer-events: none;
+  }
+  .btn[aria-disabled="true"]:hover {
+    background: var(--bg-soft-2);
+    color: var(--text-dim);
+    transform: none;
+    box-shadow: none;
+  }
+
+  /* ---------- Hero CTA stack ---------- */
+  .hero-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .hero-cta-coming {
+    font-size: 12px;
+    color: var(--text-dimmer);
+    letter-spacing: 0.02em;
+  }
+  .hero-cta-divider {
+    width: 36px;
+    height: 1px;
+    background: var(--border);
+    margin: 22px 0 18px;
+  }
+  .hero-cta-secondary-label {
+    font-size: 13px;
+    color: var(--text-dim);
+    letter-spacing: -0.005em;
+    margin-bottom: 14px;
+  }
 
   /* ---------- Email form ---------- */
   .cta-note {
@@ -218,6 +256,9 @@
     color: var(--text-dim);
     letter-spacing: -0.005em;
     line-height: 1.5;
+  }
+  .cta-note + .email-form {
+    margin-top: 14px;
   }
   .email-form {
     display: inline-flex;
@@ -263,6 +304,17 @@
     background: var(--accent-hover);
     transform: translateY(-1px);
     box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+  }
+  /* Formspree honeypot: hidden from users, bots that fill it get blocked */
+  .honeypot {
+    position: absolute !important;
+    left: -9999px !important;
+    width: 1px !important;
+    height: 1px !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    border: 0 !important;
+    padding: 0 !important;
   }
 
   /* ---------- Section base ---------- */
@@ -436,19 +488,28 @@
     pointer-events: none;
   }
 
+  .bundle-bubbles-wrap {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.45s ease;
+  }
+  .bundle-bubbles-wrap > .bundle-bubbles {
+    min-height: 0;
+    overflow: hidden;
+  }
   .bundle-box[data-state="closed"] .bundle-bubbles {
     opacity: 0;
-    max-height: 0;
-    overflow: hidden;
     pointer-events: none;
     margin-top: 0;
-    transition: opacity 0.25s ease, max-height 0.4s ease;
+    transition: opacity 0.25s ease;
+  }
+  .bundle-box[data-state="open"] .bundle-bubbles-wrap {
+    grid-template-rows: 1fr;
   }
   .bundle-box[data-state="open"] .bundle-bubbles {
     opacity: 1;
-    max-height: 700px;
     pointer-events: auto;
-    transition: opacity 0.4s ease 0.1s, max-height 0.5s ease;
+    transition: opacity 0.4s ease 0.1s;
   }
   .bd-bubble {
     opacity: 0;
@@ -469,6 +530,77 @@
   .bundle-box[data-state="open"] .bd-drops {
     opacity: 1;
     transform: translateY(0);
+  }
+
+  /* Desktop-only hover: drops pop out of the bubble with overshoot, mimicking real Dorong */
+  @media (hover: hover) and (pointer: fine) and (min-width: 721px) {
+    .bd-bubble { position: relative; }
+    .bd-circle {
+      transition: transform 0.32s cubic-bezier(0.2, 0.7, 0.2, 1),
+                  box-shadow 0.32s ease;
+    }
+    .bd-bubble:hover .bd-circle {
+      transform: translateY(-4px) scale(1.05);
+      box-shadow:
+        inset 0 -8px 16px rgba(0, 0, 0, 0.05),
+        inset 4px 6px 12px rgba(255, 255, 255, 0.85),
+        0 14px 30px rgba(0, 0, 0, 0.10);
+    }
+    /* Resting (no hover): drops sit inside the bubble, tiny and invisible */
+    .bundle-box[data-state="open"] .bd-drops {
+      opacity: 0;
+      transform: translateY(-86px) scale(0.32);
+      transform-origin: 50% 0;
+      transition: opacity 0.16s ease,
+                  transform 0.2s cubic-bezier(0.4, 0, 1, 0.7);
+      transition-delay: 0s;
+      pointer-events: none;
+    }
+    /* Hover: container pops out below the bubble with a back-out overshoot */
+    .bundle-box[data-state="open"] .bd-bubble:hover .bd-drops,
+    .bundle-box[data-state="open"] .bd-bubble:focus-within .bd-drops {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      transition: opacity 0.18s ease,
+                  transform 0.58s cubic-bezier(0.34, 1.7, 0.48, 1);
+      transition-delay: 0.04s;
+      pointer-events: auto;
+    }
+    /* Individual pills also pop, with a small stagger so multiple drops cascade */
+    .bd-drop {
+      transform-origin: 50% 0;
+      transition: transform 0.5s cubic-bezier(0.34, 1.7, 0.48, 1),
+                  opacity 0.18s ease;
+      will-change: transform, opacity;
+    }
+    .bundle-box[data-state="open"] .bd-bubble:not(:hover):not(:focus-within) .bd-drop {
+      opacity: 0;
+      transform: scale(0.55);
+    }
+    .bundle-box[data-state="open"] .bd-bubble:hover .bd-drop,
+    .bundle-box[data-state="open"] .bd-bubble:focus-within .bd-drop {
+      opacity: 1;
+      transform: scale(1);
+    }
+    .bundle-box[data-state="open"] .bd-bubble:hover .bd-drop:nth-child(1),
+    .bundle-box[data-state="open"] .bd-bubble:focus-within .bd-drop:nth-child(1) {
+      transition-delay: 0.18s;
+    }
+    .bundle-box[data-state="open"] .bd-bubble:hover .bd-drop:nth-child(2),
+    .bundle-box[data-state="open"] .bd-bubble:focus-within .bd-drop:nth-child(2) {
+      transition-delay: 0.26s;
+    }
+    .bundle-box[data-state="open"] .bd-bubble:hover .bd-drop:nth-child(3),
+    .bundle-box[data-state="open"] .bd-bubble:focus-within .bd-drop:nth-child(3) {
+      transition-delay: 0.34s;
+    }
+    .tool-chip {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .tool-chip:not(.tool-chip-more):hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.06);
+    }
   }
 
   .bundle-collapse {
@@ -505,7 +637,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 6px;
+    gap: 12px;
   }
   .bd-drops::before {
     content: "";
@@ -514,17 +646,54 @@
     left: 50%;
     width: 1px;
     height: 8px;
-    background: rgba(0, 0, 0, 0.25);
+    background: rgba(0, 0, 0, 0.18);
   }
   .bd-drop {
-    font-size: 11.5px;
-    color: var(--text-dim);
-    background: #fff;
-    border: 1px solid var(--border);
-    border-radius: 999px;
-    padding: 3px 10px;
-    line-height: 1.3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    background: none;
+    border: 0;
+    padding: 0;
+    line-height: 1.25;
     white-space: nowrap;
+  }
+  .bd-drop-bubble {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    box-shadow:
+      inset 0 -6px 12px rgba(0, 0, 0, 0.04),
+      inset 3px 4px 9px rgba(255, 255, 255, 0.85),
+      0 4px 10px rgba(0, 0, 0, 0.05);
+  }
+  .bd-drop-bubble.c1 {
+    background:
+      radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0) 38%),
+      radial-gradient(circle at 50% 55%, rgba(221, 210, 245, 0.78) 0%, rgba(221, 210, 245, 0.42) 70%, rgba(221, 210, 245, 0.25) 100%);
+  }
+  .bd-drop-bubble.c2 {
+    background:
+      radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0) 38%),
+      radial-gradient(circle at 50% 55%, rgba(200, 234, 216, 0.78) 0%, rgba(200, 234, 216, 0.42) 70%, rgba(200, 234, 216, 0.25) 100%);
+  }
+  .bd-drop-bubble.c3 {
+    background:
+      radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0) 38%),
+      radial-gradient(circle at 50% 55%, rgba(200, 214, 240, 0.78) 0%, rgba(200, 214, 240, 0.42) 70%, rgba(200, 214, 240, 0.25) 100%);
+  }
+  .bd-drop-bubble.c4 {
+    background:
+      radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0) 38%),
+      radial-gradient(circle at 50% 55%, rgba(245, 245, 250, 0.95) 0%, rgba(235, 235, 245, 0.5) 70%, rgba(225, 225, 240, 0.3) 100%);
+  }
+  .bd-drop-name {
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: -0.005em;
+    line-height: 1.2;
   }
   .bundle-legend {
     list-style: none;
@@ -562,11 +731,16 @@
     border: 1px solid rgba(255, 255, 255, 0.7);
   }
   .lg-drop {
-    width: 20px;
-    height: 9px;
-    border-radius: 999px;
-    background: #fff;
-    border: 1px solid var(--border);
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    background:
+      radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0) 50%),
+      radial-gradient(circle at 50% 55%, rgba(221, 210, 245, 0.72) 0%, rgba(221, 210, 245, 0.4) 100%);
+    box-shadow:
+      inset 0 -2px 4px rgba(0, 0, 0, 0.04),
+      inset 1px 1px 3px rgba(255, 255, 255, 0.85);
   }
   .caption {
     max-width: 640px;
@@ -758,11 +932,13 @@
       padding: 8px;
     }
     .email-form input[type="email"] {
+      flex: 0 0 auto;
       width: 100%;
       text-align: center;
       padding: 13px 16px;
     }
     .email-form button {
+      flex: 0 0 auto;
       width: 100%;
       padding: 13px 22px;
     }
@@ -780,6 +956,8 @@
 
   @media (prefers-reduced-motion: reduce) {
     .btn, .stack-bubble, .bd-bubble,
+    .bd-circle, .bd-drops, .bd-drop,
+    .bundle-bubbles-wrap,
     .bundle-box[data-state="closed"] .bundle-bubbles,
     .bundle-box[data-state="open"] .bundle-bubbles,
     .bundle-toggle { transition: none; }
@@ -806,12 +984,19 @@
       </div>
       <h1 class="headline">흩어진 작업을<br>한 방울에</h1>
       <p class="subhead">AI 도구가 늘어날수록, 작업마다 띄워야 할 도구는 더 흩어집니다.<br>도롱은 흩어진 앱·파일·웹을 컨텍스트 단위로 한 번에 엽니다.</p>
-      <div class="cta">
-        <span class="cta-note">출시되면 가장 먼저 알려드릴게요. 맥에서만 사용할 수 있습니다.<br>출시 안내 한 통 외에 다른 메일은 보내지 않습니다.</span>
+      <div class="hero-cta">
+        <span class="cta-os">macOS</span>
+        <!-- TODO: 노타리이제이션 완료 후 아래 한 줄의 href="#"을 .dmg URL로 교체하고 aria-disabled 속성을 제거하세요 -->
+        <a class="btn" href="#" aria-disabled="true" role="button">Mac용 다운로드</a>
+        <span class="hero-cta-coming">곧 출시됩니다</span>
+        <div class="hero-cta-divider" aria-hidden="true"></div>
+        <span class="hero-cta-secondary-label">출시 전에 미리 알림 받기</span>
         <form action="https://formspree.io/f/mqeoyrnv" method="POST" class="email-form">
+          <input type="text" name="_gotcha" class="honeypot" tabindex="-1" autocomplete="off" aria-hidden="true">
           <input type="email" name="email" placeholder="이메일 주소" required>
           <button type="submit">출시 알림 받기</button>
         </form>
+        <span class="cta-note">맥에서만 사용할 수 있습니다. 출시 안내 한 통 외에 다른 메일은 보내지 않습니다.</span>
       </div>
     </div>
   </section>
@@ -841,6 +1026,7 @@
             </span>
             <span class="toggle-hint">묶음을 눌러 펼쳐보기</span>
           </button>
+          <div class="bundle-bubbles-wrap">
           <div class="bundle-bubbles" id="bundleDemoBubbles">
             <div class="bd-bubble" style="--stagger:0">
               <div class="bd-circle c1" aria-hidden="true"></div>
@@ -854,27 +1040,37 @@
               <div class="bd-circle c3" aria-hidden="true"></div>
               <div class="bd-label">Google Docs</div>
               <div class="bd-drops">
-                <div class="bd-drop">자료조사.pdf</div>
+                <div class="bd-drop">
+                  <span class="bd-drop-bubble c3" aria-hidden="true"></span>
+                  <span class="bd-drop-name">자료조사.pdf</span>
+                </div>
               </div>
             </div>
             <div class="bd-bubble" style="--stagger:3">
               <div class="bd-circle c4" aria-hidden="true"></div>
               <div class="bd-label">Notion</div>
               <div class="bd-drops">
-                <div class="bd-drop">기획.md</div>
+                <div class="bd-drop">
+                  <span class="bd-drop-bubble c4" aria-hidden="true"></span>
+                  <span class="bd-drop-name">기획.md</span>
+                </div>
               </div>
             </div>
             <div class="bd-bubble" style="--stagger:4">
               <div class="bd-circle c1" aria-hidden="true"></div>
               <div class="bd-label">Chrome</div>
               <div class="bd-drops">
-                <div class="bd-drop">참고링크</div>
+                <div class="bd-drop">
+                  <span class="bd-drop-bubble c1" aria-hidden="true"></span>
+                  <span class="bd-drop-name">참고링크</span>
+                </div>
               </div>
             </div>
             <div class="bd-bubble" style="--stagger:5">
               <div class="bd-circle c2" aria-hidden="true"></div>
               <div class="bd-label">Slack</div>
             </div>
+          </div>
           </div>
           <button class="bundle-collapse" type="button">다시 접기</button>
         </div>
@@ -959,6 +1155,7 @@
       <div class="cta">
         <span class="cta-note">출시되면 가장 먼저 알려드릴게요. 맥에서만 사용할 수 있습니다.<br>출시 안내 한 통 외에 다른 메일은 보내지 않습니다.</span>
         <form action="https://formspree.io/f/mqeoyrnv" method="POST" class="email-form">
+          <input type="text" name="_gotcha" class="honeypot" tabindex="-1" autocomplete="off" aria-hidden="true">
           <input type="email" name="email" placeholder="이메일 주소" required>
           <button type="submit">출시 알림 받기</button>
         </form>
