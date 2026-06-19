@@ -461,6 +461,46 @@
     letter-spacing: -0.01em;
     color: var(--text);
   }
+  /* Drops: the files kept inside a bubble. Always visible (this is the
+     concept the demo video can't show), and lower visual priority than the
+     bubble itself. Only the document bubble holds files; the web bubbles
+     carry an empty marker, which is the point: a drop is a file, so a web
+     page has none. */
+  .bd-drops {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  .bd-drop {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11.5px;
+    letter-spacing: -0.01em;
+    color: var(--text-dim);
+    background: rgba(221, 210, 245, 0.32);
+    border: 1px solid rgba(221, 210, 245, 0.75);
+    border-radius: 7px;
+    padding: 3px 9px;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+  .bd-drop::before {
+    content: "";
+    width: 9px;
+    height: 11px;
+    border-radius: 2px;
+    background: rgba(120, 100, 200, 0.5);
+    flex: none;
+  }
+  .bd-drop.empty {
+    background: transparent;
+    border: 1px dashed var(--border);
+    color: var(--text-dimmer);
+  }
+  .bd-drop.empty::before { display: none; }
   /* "Opened" badge that pops above each bubble. All three share one parent
      state (hover / .is-open) and the same transition, so they react at the
      same time: the point is the whole set opening at once, not one by one. */
@@ -733,14 +773,24 @@
             <div class="bd-bubble">
               <div class="bd-circle c1" aria-hidden="true"><span class="bd-pop">✓ Open</span></div>
               <div class="bd-label">Google Docs</div>
+              <div class="bd-drops" aria-hidden="true">
+                <span class="bd-drop">draft.docx</span>
+                <span class="bd-drop">outline.md</span>
+              </div>
             </div>
             <div class="bd-bubble">
               <div class="bd-circle c2" aria-hidden="true"><span class="bd-pop">✓ Open</span></div>
               <div class="bd-label">Chrome</div>
+              <div class="bd-drops" aria-hidden="true">
+                <span class="bd-drop empty">web page, no drop</span>
+              </div>
             </div>
             <div class="bd-bubble">
               <div class="bd-circle c3" aria-hidden="true"><span class="bd-pop">✓ Open</span></div>
               <div class="bd-label">Slack</div>
+              <div class="bd-drops" aria-hidden="true">
+                <span class="bd-drop empty">no drop</span>
+              </div>
             </div>
           </div>
         </div>
