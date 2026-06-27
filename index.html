@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dorong : 흩어진 작업을 한 방울에</title>
 <meta name="description" content="AI 도구가 늘어날수록 작업마다 띄울 도구는 더 흩어집니다. 도롱은 흩어진 앱·파일·웹을 컨텍스트 단위로 한 번에 엽니다. macOS 데스크탑 위젯.">
+<link rel="canonical" href="https://cantabilejack.github.io/dorong-landing/">
 <meta property="og:type" content="website">
 <meta property="og:title" content="도롱 · Dorong - 흩어진 작업을 한 방울에">
 <meta property="og:description" content="앱, 웹, 파일을 컨텍스트 하나로 묶어 한 번에. macOS 데스크탑 위젯.">
@@ -1219,6 +1220,17 @@
 })();
 </script>
 
+<script>
+  // GoatCounter: collapse /dorong-landing, /dorong-landing/ and
+  // /dorong-landing/index.html into one canonical path so the Korean landing's
+  // visits aren't split across URLs. Files are still served as-is — only the
+  // analytics path is normalized, so existing/shared links never break.
+  window.goatcounter = {
+    path: function (p) {
+      return p.replace(/index\.html$/, '').replace(/\/?$/, '/');
+    }
+  };
+</script>
 <script data-goatcounter="https://dorong.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>
