@@ -197,6 +197,65 @@
     align-items: center;
     gap: 10px;
   }
+  .cta-note + .email-form {
+    margin-top: 14px;
+  }
+  .email-form {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--bg-soft);
+    padding: 6px;
+    border-radius: 14px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+    max-width: 100%;
+  }
+  .email-form input[type="email"] {
+    flex: 1 1 220px;
+    min-width: 0;
+    background: transparent;
+    border: none;
+    outline: none;
+    padding: 12px 14px;
+    font-size: 15px;
+    color: var(--text);
+    font-family: inherit;
+    letter-spacing: -0.005em;
+  }
+  .email-form input[type="email"]::placeholder {
+    color: var(--text-dim);
+  }
+  .email-form button {
+    flex: none;
+    background: var(--accent);
+    color: var(--accent-text);
+    border: none;
+    padding: 13px 22px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: -0.005em;
+    cursor: pointer;
+    font-family: inherit;
+    transition: transform 0.12s ease, background 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+  .email-form button:hover {
+    background: var(--accent-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+  }
+  /* Formspree honeypot: hidden from users, bots that fill it get blocked */
+  .honeypot {
+    position: absolute !important;
+    left: -9999px !important;
+    width: 1px !important;
+    height: 1px !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    border: 0 !important;
+    padding: 0 !important;
+  }
   .cta-os {
     font-size: 11px;
     color: var(--text-dim);
@@ -682,6 +741,24 @@
     .bubble.b3 { width: 96px; height: 96px; left: calc(50% + 60px); top: 40px; }
     .top-inner { padding: 12px 18px; }
     .container { padding: 0 20px; }
+    .email-form {
+      flex-direction: column;
+      align-items: stretch;
+      width: 100%;
+      max-width: 360px;
+      padding: 8px;
+    }
+    .email-form input[type="email"] {
+      flex: 0 0 auto;
+      width: 100%;
+      text-align: center;
+      padding: 13px 16px;
+    }
+    .email-form button {
+      flex: 0 0 auto;
+      width: 100%;
+      padding: 13px 22px;
+    }
     .audience { font-size: 16.5px; }
     .audience p + p { font-size: 15.5px; }
     .def { grid-template-columns: 80px 1fr; }
@@ -857,6 +934,11 @@
       <div class="cta">
         <a href="https://github.com/cantabilejack/dorong-landing/releases/download/v0.2.3/Dorong-0.2.3-en-arm64.dmg" class="btn" data-goatcounter-click="download-dmg-en-arm64" data-goatcounter-title="Download EN · Apple Silicon">Download · macOS</a>
         <a href="https://github.com/cantabilejack/dorong-landing/releases/download/v0.2.3/Dorong-0.2.3-en-x64.dmg" class="cta-intel" data-goatcounter-click="download-dmg-en-x64" data-goatcounter-title="Download EN · Intel">Download for Intel Mac</a>
+        <form action="https://formspree.io/f/mqeoyrnv" method="POST" class="email-form">
+          <input type="text" name="_gotcha" class="honeypot" tabindex="-1" autocomplete="off" aria-hidden="true">
+          <input type="email" name="email" placeholder="Email address" required>
+          <button type="submit">Notify me</button>
+        </form>
         <p class="cta-note">Free while in beta. Tell me what breaks.</p>
       </div>
     </div>
