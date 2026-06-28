@@ -179,6 +179,12 @@
     line-height: 1.55;
     letter-spacing: -0.005em;
   }
+  /* Drop the closing line onto its own row with a small gap — no color/weight
+     change, just visual separation. */
+  .subhead-tail {
+    display: block;
+    margin-top: 12px;
+  }
 
   /* ---------- CTA ---------- */
   .cta {
@@ -1010,7 +1016,7 @@
         <div class="bubble b3"></div>
       </div>
       <h1 class="headline">앱·웹 하나씩 열지 말고<br>한 번에 펼치세요</h1>
-      <p class="subhead">작업 하나에 앱·탭·파일이 잔뜩.<br>도롱은 그걸 방울 하나에 묶어 ⌘⇧B 한 번에 같이 엽니다. 펼쳐놨던 그대로, 멈춘 자리에서 바로.</p>
+      <p class="subhead">작업 하나에 앱·탭·파일이 잔뜩.<br>도롱은 그걸 방울 하나에 묶어 ⌘⇧B 한 번에 같이 엽니다.<span class="subhead-tail">펼쳐놨던 그대로, 멈춘 자리에서 바로.</span></p>
       <div class="hero-cta">
         <span class="cta-os">macOS</span>
         <a class="btn" href="https://github.com/cantabilejack/dorong-landing/releases/download/v0.2.3/Dorong-0.2.3-arm64.dmg" data-goatcounter-click="download-dmg-ko-arm64" data-goatcounter-title="다운로드 KR · Apple Silicon">Mac용 다운로드</a>
