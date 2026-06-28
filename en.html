@@ -256,6 +256,16 @@
     border: 0 !important;
     padding: 0 !important;
   }
+  .form-message {
+    margin-top: 10px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--text-dim);
+    letter-spacing: -0.005em;
+  }
+  .form-message[data-kind="success"] {
+    color: var(--text);
+  }
   .cta-os {
     font-size: 11px;
     color: var(--text-dim);
@@ -968,6 +978,49 @@
       }
     });
   });
+</script>
+
+<script>
+(function () {
+  // Waitlist: submit via fetch so the page doesn't bounce to Formspree, show an
+  // in-page message, and fire a GoatCounter event on success.
+  var MSG = {
+    success: "You're on the list. We'll email you when there's something new.",
+    error: 'Something went wrong. Please try again.',
+    invalid: 'Please check your email address.'
+  };
+  document.querySelectorAll('.email-form').forEach(function (form) {
+    var msg = document.createElement('p');
+    msg.className = 'form-message';
+    msg.setAttribute('role', 'status');
+    msg.hidden = true;
+    form.insertAdjacentElement('afterend', msg);
+    var show = function (text, kind) { msg.textContent = text; msg.setAttribute('data-kind', kind); msg.hidden = false; };
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var email = form.querySelector('input[type="email"]');
+      if (!email || !email.value || !email.checkValidity()) { show(MSG.invalid, 'error'); return; }
+      var btn = form.querySelector('button[type="submit"]');
+      if (btn) btn.disabled = true;
+      fetch(form.action, { method: 'POST', body: new FormData(form), headers: { 'Accept': 'application/json' } })
+        .then(function (res) {
+          if (res.ok) {
+            show(MSG.success, 'success'); form.reset();
+            if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path: 'waitlist-signup', title: 'Waitlist signup', event: true });
+            return;
+          }
+          return res.json().catch(function () { return {}; }).then(function (data) {
+            var errs = (data && data.errors) || [];
+            var txt = errs.map(function (x) { return (x.code || '') + ' ' + (x.message || ''); }).join(' ').toLowerCase();
+            if (/email|type_email|valid/.test(txt)) show(MSG.invalid, 'error');
+            else show(MSG.error, 'error');
+          });
+        })
+        .catch(function () { show(MSG.error, 'error'); })
+        .then(function () { if (btn) btn.disabled = false; });
+    });
+  });
+})();
 </script>
 
 </body>
